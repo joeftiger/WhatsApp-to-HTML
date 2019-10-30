@@ -1,142 +1,74 @@
 package org.joeftiger.whatsapp;
 
-import org.joeftiger.whatsapp.Converters;
-import org.joeftiger.whatsapp.Message;
-
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MessageParser {
 	public static final int DATE_START = 0;
 	public static final int DATE_END = DATE_START + 10;
-	public static final int DATE_LENGTH = DATE_END - DATE_START;
+	public static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	public static final int TIME_START = 12;
 	public static final int TIME_END = TIME_START + 5;
 
-	public static final int CONTACT_START = TIME_END + 3;
+	public static final String REGEX_FILE_SPLIT = "(?=(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[012])\\/(19|2[0-9])[0-9]{2}, ([01]?[0-9]|2[0-3]):[0-5][0-9] - .*?: )";
 
-	public static final String REGEX_SLASH = "\\/";
-	public static final String REGEX_DATE = "(0[1-9]|[12][0-9]|3[01])" + REGEX_SLASH +  // year
-											"(0[1-9]|1[012])" + REGEX_SLASH +           // month
-											"(19|2[0-9])[0-9]{2}";                      // day
+	public static final String REGEX_USER = "(.*?): (.|\\R)*";
 
-	public static final String REGEX_TIME = "([01]?[0-9]|2[0-3])" + ":" +   // hour
-											"[0-5][0-9]";                   // minute
+	public static final String REGEX_IMAGE = "(?=^IMG-(19|2[0-9])[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])-WA[0-9]{4}\\.jpg \\(file attached\\))";
 
-	/**
-	 * Parses the given String into a list of {@link Message}s.
-	 *
-	 * @param input chat history
-	 * @return list of messages
-	 */
-	public static List<Message> parseAll(final String input, String lineSeparator) {
-		List<Message> messages = new ArrayList<>();
+	public static final String REGEX_VIDEO = "(?=^VID-(19|2[0-9])[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])-WA[0-9]{4}\\.mp4 \\(file attached\\))";
 
-		String[] allLines = input.split(System.lineSeparator());
+	public static final String REGEX_CODE = "```((.|\\R)*?)```";
 
-		Converters converters = Converters.getInstance();
-		for (int index = 0; index < allLines.length; index++) {
-			String allDetails = allLines[index];
+	public List<HTMLMessage> parseMessages(String file) {
+		String[] messageStrings = file.split(REGEX_FILE_SPLIT);
 
-			// read next lines if not from next message
-			while (index + 1 < allLines.length && !hasDate(allLines[index + 1])) {
-				index++;
-				allDetails += lineSeparator + allLines[index];
-			}
-
-			Message message = parseMessage(allDetails);
-			converters.convert(message);
-			messages.add(message);
+		List<HTMLMessage> messages = new ArrayList<>(messageStrings.length);
+		for (String messageString : messageStrings) {
+			messages.add(parse(messageString));
 		}
-
 		return messages;
 	}
 
-	/**
-	 * Parses the given String into a {@link Message}
-	 * @param input detailed chat entry
-	 * @return message
-	 */
-	public static Message parseMessage(final String input) {
-		final LocalDate date = toDate(input.substring(DATE_START, DATE_END));
-		final LocalTime time = toTime(input.substring(TIME_START, TIME_END));
+	private HTMLMessage parse(String content) {
+		// extract date
+		HTMLMessage htmlMessage = new HTMLMessage();
+		htmlMessage.setDate(LocalDate.parse(content.substring(DATE_START, DATE_END), dateTimeFormat));
 
-		String trimmedInput = input.substring(CONTACT_START);
-		String[] senderAndMsg = trimmedInput.split(": ", 2);
-		assert senderAndMsg.length == 2;
+		// extract user
+		String user = content.substring(TIME_END + 3).replaceFirst(REGEX_USER, "$1");
+		htmlMessage.setUser(user);
 
-		final String sender = senderAndMsg[0];
-		final String message = senderAndMsg[1];
+		String message = content.substring(TIME_END + 4 + user.length());
 
-		return new Message(date, time, sender, message);
-	}
+		// search image
+		String[] split = message.split(REGEX_IMAGE, 1);
+		if (split.length == 2) {
+			message = split[1];
+			String img = split[0].substring(0, split[0].length() - 16);     // remove " (file attached)"
+			htmlMessage.addElement(new HTMLImage(img));
+		}
 
-	/**
-	 * Returns whether the given input is in the WhatsApp date format ({@link #REGEX_DATE}).
-	 * @param input String to check
-	 * @return {@code true} if valid format. {@code false} otherwise.
-	 */
-	private static boolean isDate(String input) {
-		return input.matches(REGEX_DATE);
-	}
+		// search video
+		split = message.split(REGEX_VIDEO, 1);
+		if (split.length == 2) {
+			message = split[1];
+			String vid = split[0].substring(0, split[0].length() - 16);     // remove " (file attached)"
+			htmlMessage.addElement(new HTMLVideo(vid));
+		}
 
-	/**
-	 * Returns whether the given input has a date in WhatsApp date format at the beginning ({@link #REGEX_DATE}).
-	 * @param input String to check
-	 * @return {@code true} if valid format. {@code false} otherwise.
-	 */
-	private static boolean hasDate(String input) {
-		return input.length() >= DATE_LENGTH && isDate(input.substring(DATE_START, DATE_END));
-	}
+		// search code
+		message = message.replaceAll(REGEX_CODE, "<code>$1</code>");
 
-	/**
-	 * Converts the given String input to a {@link LocalDate} using following format:
-	 * <code>dd/mm/yyyy</code>
-	 *
-	 * @param input String to format
-	 * @return local date
-	 */
-	private static LocalDate toDate(String input) {
-		assert isDate(input);
+		message = message.replaceAll("\\R", "<br>");
+		htmlMessage.addElement(new HTMLText(message));
 
-		String[] args = input.split(REGEX_SLASH);
-		assert args.length == 3;
+		// add time
+		htmlMessage.addElement(new HTMLTime(content.substring(TIME_START, TIME_END)));
 
-		int year = Integer.parseInt(args[2]);
-		int month = Integer.parseInt(args[1]);
-		int day = Integer.parseInt(args[0]);
-
-		return LocalDate.of(year, month, day);
-	}
-
-	/**
-	 * Returns whether the given input is in the WhatsApp time format ({@link #REGEX_TIME}).
-	 * @param input String to check
-	 * @return {@code true} if valid format. {@code false} otherwise.
-	 */
-	private static boolean isTime(String input) {
-		return input.matches(REGEX_TIME);
-	}
-
-	/**
-	 * Converts the given String input to a {@link LocalTime} using following format:
-	 * <code>hh:mm</code>
-	 *
-	 * @param input String to format
-	 * @return local time
-	 */
-	private static LocalTime toTime(String input) {
-		assert input.matches(REGEX_TIME);
-
-		String[] args = input.split(":");
-		assert args.length == 2;
-
-		int hour = Integer.parseInt(args[0]);
-		int minutes = Integer.parseInt(args[1]);
-
-		return LocalTime.of(hour, minutes);
+		return htmlMessage;
 	}
 }

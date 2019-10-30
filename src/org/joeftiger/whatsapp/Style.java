@@ -1,4 +1,4 @@
-package org.joeftiger.whatsapp.html5;
+package org.joeftiger.whatsapp;
 
 import java.nio.file.Path;
 

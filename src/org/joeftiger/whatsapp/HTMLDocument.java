@@ -1,10 +1,8 @@
-package org.joeftiger.whatsapp.html5;
-
-import org.joeftiger.whatsapp.Message;
+package org.joeftiger.whatsapp;
 
 import java.time.LocalDate;
 
-public class HTMLFile {
+public class HTMLDocument {
 
 	/**
 	 * Indented block for the beginning of the document. Contains two {@code %s} placeholders for
@@ -50,17 +48,10 @@ public class HTMLFile {
 	                                                "</html>\n";
 
 	/**
-	 * Indented block for an incoming message. This string has two {@code %s} placeholders for
-	 * - message
-	 * - time
+	 * Indented block for an incoming message. This string has two {@code %s} placeholders for - message - time
 	 */
 	public static final String MESSAGE_IN = "                    <div class=\"message received\">\n" +
-	                                        "                      %s\n" +
-	                                        "                      <span class=\"metadata\">\n" +
-	                                        "                        <span class=\"time\">\n" +
-	                                        "                          %s\n" +
-	                                        "                        </span>\n" +
-	                                        "                      </span>\n" +
+	                                        "%s\n" +
 	                                        "                    </div>\n";
 
 	/**
@@ -71,12 +62,7 @@ public class HTMLFile {
 	 * </ul>
 	 */
 	public static final String MESSAGE_OUT = "                    <div class=\"message sent\">\n" +
-	                                         "                      %s\n" +
-	                                         "                      <span class=\"metadata\">\n" +
-	                                         "                        <span class=\"time\">\n" +
-	                                         "                          %s\n" +
-	                                         "                        </span>\n" +
-	                                         "                      </span>\n" +
+	                                         "%s\n" +
 	                                         "                    </div>\n";
 
 	/**
@@ -88,31 +74,24 @@ public class HTMLFile {
 	public static final String DATE_BLOCK = "                    <div class=\"date\">\n" +
 	                                        "                      <span class=\"time\">\n" +
 	                                        "                        %s\n" +
-	                                        "                      </span>" +
+	                                        "                      </span>\n" +
 	                                        "                    </div>\n";
 
 	private StringBuilder content;
 	private LocalDate lastDate;
 
-	public HTMLFile() {
+	public HTMLDocument() {
 		this("", "");
 	}
 
-	public HTMLFile(String title, String name) {
+	public HTMLDocument(String title, String name) {
 		content = new StringBuilder(String.format(BEFORE_CONVERSATION, title, name));
 		lastDate = LocalDate.MIN;
 	}
 
-	public void addMessageIn(Message message) {
+	public void addMessageIn(HTMLMessage message) {
 		appendDateChange(message.getDate());
-		String in = String.format(MESSAGE_IN, message.getMessage(), message.getTime());
-		content.append(in);
-	}
-
-	public void addMessageOut(Message message) {
-		appendDateChange(message.getDate());
-		String out = String.format(MESSAGE_OUT, message.getMessage(), message.getTime());
-		content.append(out);
+		content.append(String.format(MESSAGE_IN, message.toHTML()));
 	}
 
 	private void appendDateChange(LocalDate localDate) {
@@ -121,6 +100,11 @@ public class HTMLFile {
 			String date = String.format(DATE_BLOCK, localDate);
 			content.append(date);
 		}
+	}
+
+	public void addMessageOut(HTMLMessage message) {
+		appendDateChange(message.getDate());
+		content.append(String.format(MESSAGE_OUT, message.toHTML()));
 	}
 
 	public void finish() {
