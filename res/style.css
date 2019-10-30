@@ -19,8 +19,8 @@ body {
 }
 
 img {
-  width: 330px;
-  height: 330px;
+  max-width: 330px;
+  max-height: 330px;
 }
 
 .page {

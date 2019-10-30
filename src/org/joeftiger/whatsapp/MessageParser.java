@@ -17,9 +17,9 @@ public class MessageParser {
 
 	public static final String REGEX_USER = "(.*?): (.|\\R)*";
 
-	public static final String REGEX_IMAGE = "(?=^IMG-(19|2[0-9])[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])-WA[0-9]{4}\\.jpg \\(file attached\\))";
+	public static final String REGEX_IMAGE = "^IMG-(19|2[0-9])[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])-WA[0-9]{4}\\.jpg \\(file attached\\)";
 
-	public static final String REGEX_VIDEO = "(?=^VID-(19|2[0-9])[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])-WA[0-9]{4}\\.mp4 \\(file attached\\))";
+	public static final String REGEX_VIDEO = "^VID-(19|2[0-9])[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])-WA[0-9]{4}\\.mp4 \\(file attached\\)";
 
 	public static final String REGEX_CODE = "```((.|\\R)*?)```";
 
@@ -42,19 +42,20 @@ public class MessageParser {
 		String user = content.substring(TIME_END + 3).replaceFirst(REGEX_USER, "$1");
 		htmlMessage.setUser(user);
 
-		String message = content.substring(TIME_END + 4 + user.length());
+		String message = content.substring(TIME_END + 5 + user.length());
 
 		// search image
-		String[] split = message.split(REGEX_IMAGE, 1);
-		if (split.length == 2) {
+		String[] split = message.split("\\R", 2);
+		if (split[0].matches(REGEX_IMAGE)) {
+			System.out.println(split[0]);
 			message = split[1];
 			String img = split[0].substring(0, split[0].length() - 16);     // remove " (file attached)"
 			htmlMessage.addElement(new HTMLImage(img));
 		}
 
 		// search video
-		split = message.split(REGEX_VIDEO, 1);
-		if (split.length == 2) {
+		split = message.split("\\R", 2);
+		if (split[0].matches(REGEX_VIDEO)) {
 			message = split[1];
 			String vid = split[0].substring(0, split[0].length() - 16);     // remove " (file attached)"
 			htmlMessage.addElement(new HTMLVideo(vid));
