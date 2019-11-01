@@ -2,7 +2,7 @@ package org.joeftiger.whatsapp;
 
 public class HTMLImage implements HTMLElement {
 
-	public static final String CONTAINER = "                      <a href=\"%s\">\n" +
+	public static final String CONTAINER = "                      <a href=\"../%s\">\n" +
 	                                       "                        <img src=\"../%s\">\n" +
 	                                       "                      </a>\n";
 
