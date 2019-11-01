@@ -63,7 +63,11 @@ public class MessageParser {
 		// search code
 		message = message.replaceAll(REGEX_CODE, "<code>$1</code>");
 
-		message = message.replaceAll("\\R", "<br>");
+		if (!message.isBlank()) {
+			message = message.replaceAll("\\R", "<br>");
+			message = message.substring(0, message.length() - 4);
+		}
+		
 		htmlMessage.addElement(new HTMLText(message));
 
 		// add time
