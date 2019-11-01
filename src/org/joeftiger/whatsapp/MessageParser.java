@@ -47,7 +47,6 @@ public class MessageParser {
 		// search image
 		String[] split = message.split("\\R", 2);
 		if (split[0].matches(REGEX_IMAGE)) {
-			System.out.println(split[0]);
 			message = split[1];
 			String img = split[0].substring(0, split[0].length() - 16);     // remove " (file attached)"
 			htmlMessage.addElement(new HTMLImage(img));
