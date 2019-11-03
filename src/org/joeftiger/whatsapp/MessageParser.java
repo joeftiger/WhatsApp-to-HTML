@@ -34,13 +34,11 @@ public class MessageParser {
 	}
 
 	private HTMLMessage parse(String content) {
-		// extract date
-		HTMLMessage htmlMessage = new HTMLMessage();
-		htmlMessage.setDate(LocalDate.parse(content.substring(DATE_START, DATE_END), dateTimeFormat));
-
-		// extract user
+		// extract date and user
+		LocalDate date = LocalDate.parse(content.substring(DATE_START, DATE_END), dateTimeFormat);
 		String user = content.substring(TIME_END + 3).replaceFirst(REGEX_USER, "$1");
-		htmlMessage.setUser(user);
+
+		HTMLMessage htmlMessage = new HTMLMessage(date, user);
 
 		String message = content.substring(TIME_END + 5 + user.length());
 
