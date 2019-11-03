@@ -3,7 +3,9 @@ package org.joeftiger.whatsapp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MessageParser {
 	public static final int DATE_START = 0;
@@ -13,35 +15,49 @@ public class MessageParser {
 	public static final int TIME_START = 12;
 	public static final int TIME_END = TIME_START + 5;
 
-	public static final String REGEX_FILE_SPLIT = "(?=(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[012])\\/(19|2[0-9])[0-9]{2}, ([01]?[0-9]|2[0-3]):[0-5][0-9] - .*?: )";
+	/** Used to extract single messages from a file content */
+	public static final String REGEX_MESSAGE_SPLIT = "(?=(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[012])\\/(19|2[0-9])[0-9]{2}, ([01]?[0-9]|2[0-3]):[0-5][0-9] - .*?: )";
 
+	/** Used to extract user from message */
 	public static final String REGEX_USER = "(.*?): (.|\\R)*";
 
+	/** Used to extract image links from message */
 	public static final String REGEX_IMAGE = "^IMG-(19|2[0-9])[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])-WA[0-9]{4}\\.jpg \\(file attached\\)";
 
+	/** Used to extract video links from message */
 	public static final String REGEX_VIDEO = "^VID-(19|2[0-9])[0-9]{2}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])-WA[0-9]{4}\\.mp4 \\(file attached\\)";
 
+	/** Used to extract code from message */
 	public static final String REGEX_CODE = "```((.|\\R)*?)```";
 
-	public List<HTMLMessage> parseMessages(String file) {
-		String[] messageStrings = file.split(REGEX_FILE_SPLIT);
+	/**
+	 * Parses the given file content into a list of {@link HTMLMessage}s.
+	 *
+	 * @param fileContent raw file content
+	 * @return list of {@code HTMLMessage}s
+	 */
+	public List<HTMLMessage> parseMessages(String fileContent) {
+		String[] messages = fileContent.split(REGEX_MESSAGE_SPLIT);
 
-		List<HTMLMessage> messages = new ArrayList<>(messageStrings.length);
-		for (String messageString : messageStrings) {
-			messages.add(parse(messageString));
-		}
-		return messages;
+		return Arrays.stream(messages)
+				.map(this::parseMessageFrom)
+				.collect(Collectors.toCollection(() -> new ArrayList<>(messages.length)));
 	}
 
-	private HTMLMessage parse(String content) {
-		// extract date and user
+	/**
+	 * Parses an {@link HTMLMessage} from the given raw content representing the message in the backup file.
+	 *
+	 * @param content raw message content
+	 * @return resulting {@code HTMLMessage}
+	 */
+	private HTMLMessage parseMessageFrom(String content) {
 		LocalDate date = LocalDate.parse(content.substring(DATE_START, DATE_END), dateTimeFormat);
 		String user = content.substring(TIME_END + 3).replaceFirst(REGEX_USER, "$1");
 
 		HTMLMessage htmlMessage = new HTMLMessage(date, user);
 
 		String message = content.substring(TIME_END + 5 + user.length());
-		
+
 		message = searchImage(message, htmlMessage);
 		message = searchVideo(message, htmlMessage);
 		message = searchCode(message);
@@ -54,32 +70,58 @@ public class MessageParser {
 		return htmlMessage;
 	}
 
-	private String searchImage(String message, HTMLMessage htmlMessage) {
-		String[] split = message.split("\\R", 2);
+	/**
+	 * Searches the content for an image link and extracts the information to the {@link HTMLMessage}.
+	 *
+	 * @param content     content to search for image link
+	 * @param htmlMessage message to store the HTML-ized image link
+	 * @return {@code content} without the image link
+	 */
+	private String searchImage(String content, HTMLMessage htmlMessage) {
+		String[] split = content.split("\\R", 2);
 		if (split[0].matches(REGEX_IMAGE)) {
-			message = split[1];
+			content = split[1];
 			String img = split[0].substring(0, split[0].length() - 16);     // remove " (file attached)"
 			htmlMessage.addElement(new HTMLImage(img));
 		}
 
-		return message;
+		return content;
 	}
 
-	private String searchVideo(String message, HTMLMessage htmlMessage) {
-		String[] split = message.split("\\R", 2);
+	/**
+	 * Searches the content for a video link and extracts the information to the {@link HTMLMessage}.
+	 *
+	 * @param content     content to search for image link
+	 * @param htmlMessage message to store the HTML-ized image link
+	 * @return {@code content} without the image link
+	 */
+	private String searchVideo(String content, HTMLMessage htmlMessage) {
+		String[] split = content.split("\\R", 2);
 		if (split[0].matches(REGEX_VIDEO)) {
-			message = split[1];
+			content = split[1];
 			String vid = split[0].substring(0, split[0].length() - 16);     // remove " (file attached)"
 			htmlMessage.addElement(new HTMLVideo(vid));
 		}
 
-		return message;
+		return content;
 	}
 
+	/**
+	 * Searches the message for code occurrences, HTML-izing them.
+	 *
+	 * @param message message to search for code
+	 * @return HTML-ized {@code message}
+	 */
 	private String searchCode(String message) {
 		return message.replaceAll(REGEX_CODE, "<code>$1</code>");
 	}
 
+	/**
+	 * HTML-izes line breaks in the message.
+	 *
+	 * @param message message to HTML-ize
+	 * @return HTML-ized {@code message}
+	 */
 	private String replaceMessageLineBreaks(String message) {
 		if (!message.isBlank()) {
 			message = message.replaceAll("\\R", "<br>");
