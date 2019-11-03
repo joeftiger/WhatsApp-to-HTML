@@ -41,8 +41,20 @@ public class MessageParser {
 		HTMLMessage htmlMessage = new HTMLMessage(date, user);
 
 		String message = content.substring(TIME_END + 5 + user.length());
+		
+		message = searchImage(message, htmlMessage);
+		message = searchVideo(message, htmlMessage);
+		message = searchCode(message);
 
-		// search image
+		// finalize
+		message = replaceMessageLineBreaks(message);
+		htmlMessage.addElement(new HTMLText(message));
+		htmlMessage.addElement(new HTMLTime(content.substring(TIME_START, TIME_END)));
+
+		return htmlMessage;
+	}
+
+	private String searchImage(String message, HTMLMessage htmlMessage) {
 		String[] split = message.split("\\R", 2);
 		if (split[0].matches(REGEX_IMAGE)) {
 			message = split[1];
@@ -50,27 +62,30 @@ public class MessageParser {
 			htmlMessage.addElement(new HTMLImage(img));
 		}
 
-		// search video
-		split = message.split("\\R", 2);
+		return message;
+	}
+
+	private String searchVideo(String message, HTMLMessage htmlMessage) {
+		String[] split = message.split("\\R", 2);
 		if (split[0].matches(REGEX_VIDEO)) {
 			message = split[1];
 			String vid = split[0].substring(0, split[0].length() - 16);     // remove " (file attached)"
 			htmlMessage.addElement(new HTMLVideo(vid));
 		}
 
-		// search code
-		message = message.replaceAll(REGEX_CODE, "<code>$1</code>");
+		return message;
+	}
 
+	private String searchCode(String message) {
+		return message.replaceAll(REGEX_CODE, "<code>$1</code>");
+	}
+
+	private String replaceMessageLineBreaks(String message) {
 		if (!message.isBlank()) {
 			message = message.replaceAll("\\R", "<br>");
 			message = message.substring(0, message.length() - 4);
 		}
-		
-		htmlMessage.addElement(new HTMLText(message));
 
-		// add time
-		htmlMessage.addElement(new HTMLTime(content.substring(TIME_START, TIME_END)));
-
-		return htmlMessage;
+		return message;
 	}
 }
