@@ -1,6 +1,6 @@
 package org.joeftiger.whatsapp;
 
-public class HTMLImage implements HTMLElement {
+public class HTMLImage implements HTMLContent {
 
 	public static final String CONTAINER = "                      <a href=\"../%s\">\n" +
 	                                       "                        <img src=\"../%s\">\n" +

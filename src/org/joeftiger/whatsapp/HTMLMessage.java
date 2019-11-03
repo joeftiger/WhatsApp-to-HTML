@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HTMLMessage {
+public class HTMLMessage implements HTMLElement {
 
 	private LocalDate date;
 	private String user;
@@ -12,13 +12,20 @@ public class HTMLMessage {
 	private List<HTMLElement> elements;
 
 	public HTMLMessage() {
-		elements = new ArrayList<>();
+		this(null, null);
+	}
+
+	public HTMLMessage(LocalDate date, String user) {
+		this.date = date;
+		this.user = user;
+		this.elements = new ArrayList<>();
 	}
 
 	public void addElement(HTMLElement e) {
 		elements.add(e);
 	}
 
+	@Override
 	public String toHTML() {
 		StringBuilder sb = new StringBuilder();
 		for (HTMLElement e : elements) {

@@ -1,6 +1,6 @@
 package org.joeftiger.whatsapp;
 
-public class HTMLText implements HTMLElement {
+public class HTMLText implements HTMLContent {
 
 	public static final String CONTAINER = "                      <span>\n" +
 	                                       "                        %s\n" +

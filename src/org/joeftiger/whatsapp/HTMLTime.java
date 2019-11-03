@@ -1,6 +1,6 @@
 package org.joeftiger.whatsapp;
 
-public class HTMLTime implements HTMLElement {
+public class HTMLTime implements HTMLContent {
 
 	public static final String CONTAINER = "                      <span class=\"metadata\">\n" +
 	                                       "                        <span class=\"time\">\n" +

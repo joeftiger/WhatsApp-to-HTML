@@ -1,6 +1,6 @@
 package org.joeftiger.whatsapp;
 
-public class HTMLVideo implements HTMLElement {
+public class HTMLVideo implements HTMLContent {
 
 	public static final String CONTAINER = "                      <video controls loop>\n" +
 	                                       "                        <source src=\"../%s\" type=\"video/mp4\">\n" +
