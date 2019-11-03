@@ -1,0 +1,8 @@
+# IDE project
+.idea/
+
+# compilation
+out/
+
+# data
+data/
