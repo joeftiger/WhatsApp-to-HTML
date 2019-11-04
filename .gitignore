@@ -4,5 +4,8 @@
 # compilation
 out/
 
+# libraries
+lib/
+
 # data
 data/
