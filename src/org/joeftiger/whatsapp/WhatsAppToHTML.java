@@ -1,47 +1,27 @@
 package org.joeftiger.whatsapp;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
+import java.nio.file.*;
 
 public class WhatsAppToHTML {
 
 	private Path filePath;
 	private String outgoingUser;
 
-	private Path mainDirectory;
-	private Path htmlDirectory;
-
-	private HTMLDocument htmlFile;
+	private DocumentCreator creator;
 
 	private WhatsAppToHTML(String[] args) throws IOException {
 		init(args);
 
-		mainDirectory = filePath.getParent();
-
 		System.out.println("Reading in file:\t[" + filePath + "] ...");
-		String content = Files.readString(filePath);
-		List<HTMLMessage> messages = new MessageParser().parseMessages(content);
-		System.out.println("Parsed " + messages.size() + " messages.");
+		MessageParser parser = new MessageParser(Files.readString(filePath), outgoingUser);
+		creator.addMessagesFrom(parser);
 
-		htmlFile = new HTMLDocument();
-		for (HTMLMessage m : messages) {
-			if (m.getUser().equals(outgoingUser)) {
-				htmlFile.addMessageOut(m);
-			} else {
-				htmlFile.addMessageIn(m);
-			}
-		}
-
-		htmlFile.finish();
-
+		System.out.println("Saving ...");
 		save();
 	}
 
-	private void init(String[] args) {
+	private void init(String[] args) throws IOException {
 		if (args.length != 2 || args[0].equals("-h") || args[0].equals("--help")) {
 			showHelp();
 			System.exit(-1);
@@ -49,6 +29,7 @@ public class WhatsAppToHTML {
 
 		outgoingUser = args[0];
 		filePath = Path.of(args[1]);
+		creator = new DocumentCreator(Path.of("./res/index.html"));
 
 		if (outgoingUser == null || outgoingUser.isBlank() || filePath == null) {
 			showHelp();
@@ -56,48 +37,42 @@ public class WhatsAppToHTML {
 		}
 	}
 
-	private void showHelp() {
-		System.err.println("usage:\t<outgoing user> <path to chat.txt>");
-	}
-
 	private void save() {
 		createDirectory();
 		saveCSS();
 		saveHTML();
-
-		System.out.println("Successfully converted.");
 	}
 
-	private void saveHTML() {
-		System.out.println("Writing HTML:\t\t[" + htmlDirectory + "/index.html] ...");
+	private void createDirectory() {
+		String directory = filePath.getParent() + "/html";
+		System.out.println("Creating directory:\t[" + directory + "] ...");
 
-		Path html = Path.of(htmlDirectory.toString(), "index.html");
 		try {
-			Files.writeString(html, htmlFile.toString());
+			Files.createDirectory(Path.of(directory));
+		} catch (FileAlreadyExistsException ignored) {
+			printError("Directory already exists: [" + directory + "]", "Skipping ...");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void saveCSS() {
-		System.out.println("Writing CSS:\t\t[" + htmlDirectory + "/style.css] ...");
+		String css = filePath.getParent() + "/html/style.css";
+		System.out.println("Writing CSS:\t\t[" + css + "] ...");
 
-		Path css = Path.of(htmlDirectory.toString(), "style.css");
 		try {
-			Files.copy(Style.PATH, css, StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(Style.PATH, Path.of(css), StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void createDirectory() {
-		System.out.println("Creating directory:\t[" + mainDirectory + "/html] ...");
+	private void saveHTML() {
+		String html = filePath.getParent() + "/html/index.html";
+		System.out.println("Writing HTML:\t\t[" + html + "] ...");
 
-		htmlDirectory = Path.of(mainDirectory.toString(), "html");
 		try {
-			Files.createDirectory(htmlDirectory);
-		} catch (FileAlreadyExistsException ignored) {
-			printError("Directory already exists: [" + htmlDirectory + "]", "Skipping ...");
+			Files.writeString(Path.of(html), creator.getDocument().toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,6 +82,10 @@ public class WhatsAppToHTML {
 		for (String e : errors) {
 			System.err.println("-- " + e);
 		}
+	}
+
+	private void showHelp() {
+		System.err.println("usage:\t<outgoing user> <path to chat.txt>");
 	}
 
 	public static void main(String[] args) throws IOException {
