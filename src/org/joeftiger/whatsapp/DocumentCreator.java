@@ -17,16 +17,7 @@ public class DocumentCreator {
 		this(Files.readString(uri));
 	}
 
-	public DocumentCreator(Path uri, String avatarName) throws IOException {
-		this(Files.readString(uri), avatarName);
-	}
-
 	public DocumentCreator(String htmlContent) {
-		this(htmlContent, "Unknown");
-	}
-
-	public DocumentCreator(String htmlContent, String avatarName) {
-		htmlContent = String.format(htmlContent, avatarName);
 		this.document = Jsoup.parse(htmlContent);
 	}
 
