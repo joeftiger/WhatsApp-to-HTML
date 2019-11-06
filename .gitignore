@@ -1,5 +1,6 @@
 # IDE project
 # .idea/
+.idea/workspace.xml
 
 # compilation
 out/
@@ -9,4 +10,3 @@ lib/
 
 # data
 data/
-.idea/workspace.xml
