@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class DocumentCreator {
 
@@ -39,8 +40,9 @@ public class DocumentCreator {
 	 */
 	public void addMessagesFrom(MessageParser parser) {
 		Element element = document.getElementById("conversation-container");
-
-		for (Element e : parser.parseMessages()) {
+		List<Element> messages = parser.parseMessages();
+		
+		for (Element e : messages) {
 			element.appendChild(e);
 		}
 	}
