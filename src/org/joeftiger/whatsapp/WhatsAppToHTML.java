@@ -13,14 +13,23 @@ public class WhatsAppToHTML {
 	private WhatsAppToHTML(String[] args) throws IOException {
 		init(args);
 
-		System.out.println("Reading in file:\t[" + filePath + "] ...");
-		MessageParser parser = new MessageParser(Files.readString(filePath), outgoingUser);
-		creator.addMessagesFrom(parser);
+		System.out.println("\u001B[1m" + "=".repeat(10) + " INIT " + "=".repeat(10));
+		System.out.println("Reading in file:\t[" + filePath + "]");
+		var content = Files.readString(filePath);
 
-		System.out.println("Saving ...");
+		var parser = new MessageParser(content, outgoingUser);
+		var messages = parser.parseMessages();
+		System.out.printf("- Parsed %s messages\n", messages.size());
+
+		creator.addMessagesFrom(messages);
+		System.out.println("- Created HTML");
+
+		System.out.println("\u001B[1m" + "=".repeat(9) + " SAVING " + "=".repeat(9));
+
 		createDirectory();
 		saveCSS();
 		saveHTML();
+		System.out.println("\u001B[1m" + "=".repeat(8) + " FINISHED " + "=".repeat(8));
 	}
 
 	/**
@@ -55,7 +64,7 @@ public class WhatsAppToHTML {
 	 */
 	private void createDirectory() {
 		String directory = filePath.getParent() + "/html";
-		System.out.println("Creating directory:\t[" + directory + "] ...");
+		System.out.println("Creating directory:\t[" + directory + "]");
 
 		try {
 			Files.createDirectory(Path.of(directory));
@@ -71,7 +80,7 @@ public class WhatsAppToHTML {
 	 */
 	private void saveCSS() {
 		String css = filePath.getParent() + "/html/style.css";
-		System.out.println("Writing CSS:\t\t[" + css + "] ...");
+		System.out.println("Writing CSS:\t\t[" + css + "]");
 
 		try {
 			Files.copy(Style.PATH, Path.of(css), StandardCopyOption.REPLACE_EXISTING);
@@ -85,7 +94,7 @@ public class WhatsAppToHTML {
 	 */
 	private void saveHTML() {
 		String html = filePath.getParent() + "/html/index.html";
-		System.out.println("Writing HTML:\t\t[" + html + "] ...");
+		System.out.println("Writing HTML:\t\t[" + html + "]");
 
 		try {
 			Files.writeString(Path.of(html), creator.getDocument().toString());
