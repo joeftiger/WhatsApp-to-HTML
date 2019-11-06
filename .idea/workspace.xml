@@ -46,7 +46,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.WhatsAppToHTML v2">
+  <component name="RunManager" selected="Application.ExampleDataWriter">
+    <configuration name="ExampleDataWriter" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.joeftiger.whatsapp.ExampleDataWriter" />
+      <module name="WhatsApp-to-HTML" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.joeftiger.whatsapp.html.Test" />
       <module name="WhatsApp-to-HTML" />
@@ -65,9 +72,11 @@
     <list>
       <item itemvalue="Application.WhatsAppToHTML v2" />
       <item itemvalue="Application.Test" />
+      <item itemvalue="Application.ExampleDataWriter" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.ExampleDataWriter" />
         <item itemvalue="Application.Test" />
       </list>
     </recent_temporary>
