@@ -1,6 +1,5 @@
 # IDE project
-# .idea/
-.idea/workspace.xml
+.idea/
 
 # compilation
 out/
