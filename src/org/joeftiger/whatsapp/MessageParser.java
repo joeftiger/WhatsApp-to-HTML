@@ -91,7 +91,7 @@ public class MessageParser {
 	}
 
 	/**
-	 * Searches the content for an image link and extracts the information to the {@link HTMLMessage}.
+	 * Searches the content for an image link and extracts the information to the given {@link Element}.
 	 *
 	 * @param content content to search for image link
 	 * @param message message to store the HTML-ized image link
@@ -115,7 +115,7 @@ public class MessageParser {
 	}
 
 	/**
-	 * Searches the content for a video link and extracts the information to the {@link HTMLMessage}.
+	 * Searches the content for a video link and extracts the information to the given {@link Element}.
 	 *
 	 * @param content content to search for image link
 	 * @param message message to store the HTML-ized image link
