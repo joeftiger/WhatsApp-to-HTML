@@ -34,14 +34,13 @@ public class DocumentCreator {
 	}
 
 	/**
-	 * Adds all messages from the given parser to this document.
+	 * Adds all messages to the document
 	 *
-	 * @param parser message parser containing parsed messages
+	 * @param messages message elements to add
 	 */
-	public void addMessagesFrom(MessageParser parser) {
+	public void addMessagesFrom(List<Element> messages) {
 		Element element = document.getElementById("conversation-container");
-		List<Element> messages = parser.parseMessages();
-		
+
 		for (Element e : messages) {
 			element.appendChild(e);
 		}
