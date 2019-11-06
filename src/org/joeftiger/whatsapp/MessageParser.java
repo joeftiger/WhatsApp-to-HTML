@@ -83,8 +83,8 @@ public class MessageParser {
 		Element metadata = new Element("span")
 				.addClass("metadata")
 				.appendChild(new Element("span")
-				.addClass("time")
-				.appendText(date.toString() + "\t" + time.toString()));
+							.addClass("time")
+							.appendText(date.toString() + "\t" + time.toString()));
 		message.appendChild(metadata);
 
 		return message;
@@ -104,11 +104,14 @@ public class MessageParser {
 			content = split[1];
 
 			String src = "../" + split[0].substring(0, split[0].length() - 16);
-			Element img = new Element("img")
-					.attr("src", src)
+			Element link = new Element("a")
 					.attr("href", src);
 
-			message.appendChild(img);
+			Element img = new Element("img")
+					.attr("src", src);
+
+			link.appendChild(img);
+			message.appendChild(link);
 		}
 
 		return content;

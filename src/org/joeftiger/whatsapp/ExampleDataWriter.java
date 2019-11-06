@@ -52,7 +52,7 @@ public class ExampleDataWriter {
 	}
 
 	public static void main(String[] args) throws IOException {
-//		createLoremIpsum();
-		createCount();
+		createLoremIpsum();
+//		createCount();
 	}
 }
