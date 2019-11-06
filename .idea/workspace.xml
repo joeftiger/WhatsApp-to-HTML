@@ -46,7 +46,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.ExampleDataWriter">
+  <component name="RunManager" selected="Application.WhatsAppToHTML">
     <configuration name="ExampleDataWriter" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.joeftiger.whatsapp.ExampleDataWriter" />
       <module name="WhatsApp-to-HTML" />
@@ -54,30 +54,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.joeftiger.whatsapp.html.Test" />
-      <module name="WhatsApp-to-HTML" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="WhatsAppToHTML v2" type="Application" factoryName="Application">
+    <configuration name="WhatsAppToHTML" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="org.joeftiger.whatsapp.WhatsAppToHTML" />
       <module name="WhatsApp-to-HTML" />
-      <option name="PROGRAM_PARAMETERS" value="julius ./data/AnnaEmmenegger/chat.txt" />
+      <option name="PROGRAM_PARAMETERS" value="Lorem ./res/example_data/example.txt" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.WhatsAppToHTML v2" />
-      <item itemvalue="Application.Test" />
+      <item itemvalue="Application.WhatsAppToHTML" />
       <item itemvalue="Application.ExampleDataWriter" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.ExampleDataWriter" />
-        <item itemvalue="Application.Test" />
       </list>
     </recent_temporary>
   </component>
