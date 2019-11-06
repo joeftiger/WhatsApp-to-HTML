@@ -163,7 +163,7 @@ public class MessageParser {
 	}
 
 	/**
-	 * HTML-izes line breaks in the message.
+	 * Searches the message for line breaks, HTML-izing them.
 	 *
 	 * @param message message to HTML-ize
 	 * @return HTML-ized {@code message}
