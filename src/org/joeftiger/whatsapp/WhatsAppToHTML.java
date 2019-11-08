@@ -13,23 +13,23 @@ public class WhatsAppToHTML {
 	private WhatsAppToHTML(String[] args) throws IOException {
 		init(args);
 
-		System.out.println("\u001B[1m" + "=".repeat(10) + " INIT " + "=".repeat(10));
+		System.out.println("=".repeat(10) + " INIT " + "=".repeat(10));
 		System.out.println("Reading in file:\t[" + filePath + "]");
 		var content = Files.readString(filePath);
 
 		var parser = new MessageParser(content, outgoingUser);
 		var messages = parser.parseMessages();
-		System.out.printf("- Parsed %s messages\n", messages.size());
+		System.out.printf("-- Parsed %s messages\n", messages.size());
 
 		creator.addMessagesFrom(messages);
-		System.out.println("- Created HTML");
+		System.out.println("-- Created HTML");
 
-		System.out.println("\u001B[1m" + "=".repeat(9) + " SAVING " + "=".repeat(9));
+		System.out.println("=".repeat(9) + " SAVING " + "=".repeat(9));
 
 		createDirectory();
 		saveCSS();
 		saveHTML();
-		System.out.println("\u001B[1m" + "=".repeat(8) + " FINISHED " + "=".repeat(8));
+		System.out.println("=".repeat(8) + " FINISHED " + "=".repeat(8));
 	}
 
 	/**
@@ -45,13 +45,7 @@ public class WhatsAppToHTML {
 
 		outgoingUser = args[0];
 		filePath = Path.of(args[1]);
-		try {
-			creator = new DocumentCreator(Path.of("./res/index.html"));
-		} catch (IOException e) {
-			printError("Program error: Can't create the document from the base html.");
-			e.printStackTrace();
-			System.exit(-1);
-		}
+		creator = new DocumentCreator(Resources.getInstance().getHtml());
 
 		if (outgoingUser == null || outgoingUser.isBlank() || filePath == null) {
 			showHelp();
@@ -83,7 +77,7 @@ public class WhatsAppToHTML {
 		System.out.println("Writing CSS:\t\t[" + css + "]");
 
 		try {
-			Files.copy(Style.PATH, Path.of(css), StandardCopyOption.REPLACE_EXISTING);
+			Files.writeString(Path.of(css), Resources.getInstance().getStyle());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
