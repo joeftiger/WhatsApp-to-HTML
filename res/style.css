@@ -29,14 +29,10 @@ body {
 
 /* Chat */
 
-.chat {
+.chat-container {
     text-align: left;
     height: 100%;
     width: 100%;
-}
-
-.chat-container {
-    height: 100%;
 }
 
 /* User Bar */
