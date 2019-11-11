@@ -36,6 +36,7 @@ public class ConversationParser {
 
 	public void appendMessagesFrom(String content) {
 		String[] messages = content.split(REGEX_MESSAGE_SPLIT);
+		messageCounter = messages.length;
 
 		Arrays.stream(messages).forEach(i -> parseMessageFrom(new MessageData(i)));
 	}
@@ -68,7 +69,6 @@ public class ConversationParser {
 						             .addClass("time")
 						             .appendText(content.getTime().toString())
 				).appendTo(message);
-		messageCounter++;
 	}
 
 	/**
