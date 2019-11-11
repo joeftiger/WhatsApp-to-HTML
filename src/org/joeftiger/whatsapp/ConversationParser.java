@@ -67,8 +67,8 @@ public class ConversationParser {
 				.addClass("metadata")
 				.appendChild(new Element("span")
 						             .addClass("time")
-						             .appendText(content.getTime().toString())
-				).appendTo(message);
+						             .appendText(content.getTime().toString()))
+				.appendTo(message);
 	}
 
 	/**
@@ -86,14 +86,12 @@ public class ConversationParser {
 
 			String src = "../" + split[0].substring(0, split[0].length() - 16);
 
-			Element img = new Element("img")
-					.attr("src", src);
-			Element imgLink = new Element("a")
+			new Element("a")
 					.attr("href", src)
-					.appendChild(img);
+					.appendChild(new Element("img").attr("src", src))
+					.appendTo(message);
 
-			message.appendChild(imgLink)
-					.appendChild(new Element("br"));
+			message.appendChild(new Element("br"));
 		}
 	}
 
@@ -109,16 +107,13 @@ public class ConversationParser {
 		if (split[0].matches(REGEX_VIDEO)) {
 			content.setMessage(split[1]);
 
-			Element source = new Element("source")
-					.attr("src", "../" + split[0].substring(0, split[0].length() - 16))
-					.attr("type", "video/mp4");
-
-			Element vid = new Element("vid")
+			new Element("vid")
 					.attr("controls", true)
 					.attr("loop", true)
-					.appendChild(source);
-
-			message.appendChild(vid);
+					.appendChild(new Element("source")
+							             .attr("src", "../" + split[0].substring(0, split[0].length() - 16))
+							             .attr("type", "video/mp4"))
+					.appendTo(message);
 		}
 	}
 
