@@ -36,7 +36,7 @@ public class ConversationParser {
 
 	public void appendMessagesFrom(String content) {
 		String[] messages = content.split(REGEX_MESSAGE_SPLIT);
-		messageCounter = messages.length;
+		messageCounter += messages.length;
 
 		Arrays.stream(messages).forEach(i -> parseMessageFrom(new MessageData(i)));
 	}
