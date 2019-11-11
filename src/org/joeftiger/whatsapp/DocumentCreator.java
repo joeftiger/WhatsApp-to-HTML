@@ -33,6 +33,10 @@ public class DocumentCreator {
 		this.document = Jsoup.parse(htmlContent);
 	}
 
+	public void appendChild(Element element, String id) {
+		document.getElementById(id).appendChild(element);
+	}
+
 	/**
 	 * Adds all messages to the document
 	 *

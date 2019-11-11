@@ -1,4 +1,5 @@
 06/11/2019, 07:08 - Lorem: IMG-20191106-WA0000.jpg (file attached)
+This is a beautiful wolf!
 06/11/2019, 07:08 - Ipsum: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 06/11/2019, 07:08 - Lorem: Nunc aliquam orci at quam ultricies viverra.
 06/11/2019, 07:08 - Ipsum: Nam malesuada sapien eu ante congue elementum.

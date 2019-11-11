@@ -17,11 +17,11 @@ public class WhatsAppToHTML {
 		System.out.println("Reading in file:\t[" + filePath + "]");
 		var content = Files.readString(filePath);
 
-		var parser = new MessageParser(content, outgoingUser);
-		var messages = parser.parseMessages();
-		System.out.printf("-- Parsed %s messages\n", messages.size());
+		var parser = new ConversationParser(outgoingUser);
+		parser.appendMessagesFrom(content);
+		System.out.printf("-- Parsed %d messages\n", parser.getMessageCounter());
 
-		creator.addMessagesFrom(messages);
+		creator.appendChild(parser.getConversationContainer(), "conversation");
 		System.out.println("-- Created HTML");
 
 		System.out.println("=".repeat(9) + " SAVING " + "=".repeat(9));
