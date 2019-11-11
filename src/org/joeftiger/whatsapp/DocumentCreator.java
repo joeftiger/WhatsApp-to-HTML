@@ -38,19 +38,6 @@ public class DocumentCreator {
 	}
 
 	/**
-	 * Adds all messages to the document
-	 *
-	 * @param messages message elements to add
-	 */
-	public void addMessagesFrom(List<Element> messages) {
-		Element element = document.getElementById("conversation-container");
-
-		for (Element e : messages) {
-			element.appendChild(e);
-		}
-	}
-
-	/**
 	 * Returns the document.
 	 *
 	 * @return document
