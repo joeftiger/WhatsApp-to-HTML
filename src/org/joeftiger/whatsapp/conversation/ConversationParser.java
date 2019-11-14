@@ -196,13 +196,7 @@ class ConversationParser {
 			return this;
 		}
 
-		public boolean hasUserOut() {
-			return userOut != null;
-		}
 
-		public boolean hasUserIn() {
-			return userIn != null;
-		}
 
 		public ConversationParser build() {
 			checkValidState();
