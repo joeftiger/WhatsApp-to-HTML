@@ -5,14 +5,16 @@ import java.time.LocalTime;
 import java.util.function.Function;
 
 public class ConversationParserBuilder {
-	private String id;
+	private static int idCounter = 0;
+
+	private String ID;
 	private String content;
 	private String userOut;
 	private String userIn;
 	private Path relativePath;
 
 	public ConversationParserBuilder setID(String id) {
-		this.id = id;
+		this.ID = id;
 		return null;
 	}
 
@@ -73,6 +75,10 @@ public class ConversationParserBuilder {
 	}
 
 	private Function<String, String> createPathCreator() {
+		if (relativePath == null) {
+			return s -> Path.of("./", s).toString();
+		}
+
 		return s -> Path.of(String.valueOf(relativePath), s).toString();
 	}
 
@@ -81,7 +87,9 @@ public class ConversationParserBuilder {
 			throw new IllegalStateException("Content not set");
 		}
 		if (userOut == null && userIn == null) {
-			System.err.println("-- " + LocalTime.now() + "\tConversationBuilder " + id +
+			if (ID == null) ID = String.valueOf(idCounter++);
+
+			System.err.println("-- " + LocalTime.now() + "\tConversationBuilder " + ID +
 			                   ":\tNo incoming and outgoing user set. Assuming all messages incoming");
 		}
 	}
