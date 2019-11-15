@@ -3,7 +3,6 @@ package org.joeftiger.whatsapp.conversation;
 import org.jsoup.nodes.Element;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -27,17 +26,20 @@ class ConversationParser {
 
 	private List<Element> messages;
 	private String content;
+
 	private Function<String, Boolean> checkUserOut;
+	private Function<String, String> pathCreator;
 
 	private LocalDate lastDate = LocalDate.MIN;
 
-	/** ============================================================================================================ */
-
-	ConversationParser(String content, Function<String, Boolean> checkUserOut) {
+	ConversationParser(String content, Function<String, Boolean> checkUserOut, Function<String, String> pathCreator) {
 		messages = new ArrayList<>();
 		this.content = content;
 		this.checkUserOut = checkUserOut;
+		this.pathCreator = pathCreator;
 	}
+
+	/** ============================================================================================================ */
 
 	public List<Element> parse() {
 		String[] splitMessages = content.split(REGEX_MESSAGE_SPLIT);
@@ -92,7 +94,7 @@ class ConversationParser {
 		if (split[0].matches(REGEX_IMAGE)) {
 			content.setMessage(split[1]);
 
-			String src = "../" + split[0].substring(0, split[0].length() - 16);
+			String src = pathCreator.apply(split[0].substring(0, split[0].length() - 16));
 
 			new Element("a")
 					.attr("href", src)
@@ -115,11 +117,13 @@ class ConversationParser {
 		if (split[0].matches(REGEX_VIDEO)) {
 			content.setMessage(split[1]);
 
+			String src = pathCreator.apply(split[0].substring(0, split[0].length() - 16));
+
 			new Element("vid")
 					.attr("controls", true)
 					.attr("loop", true)
 					.appendChild(new Element("source")
-							             .attr("src", "../" + split[0].substring(0, split[0].length() - 16))
+							             .attr("src", src)
 							             .attr("type", "video/mp4"))
 					.appendTo(message);
 		}
@@ -148,81 +152,5 @@ class ConversationParser {
 		return new Element("div")
 				.addClass("date")
 				.appendText(date.toString());
-	}
-
-	public static class Builder {
-
-		private String id;
-		private String content;
-		private String userOut;
-		private String userIn;
-
-		public Builder setID(String id) {
-			this.id = id;
-			return this;
-		}
-
-		/**
-		 * Overwrites the content of the conversation.
-		 *
-		 * @param content conversation content
-		 * @return this builder
-		 */
-		public Builder setContent(String content) {
-			this.content = content;
-			return this;
-		}
-
-		/**
-		 * Overwrites the outgoing user (the user receiving messages).
-		 *
-		 * @param userOut outgoing user
-		 * @return this builder
-		 */
-		public Builder setUserOut(String userOut) {
-			this.userOut = userOut;
-			return this;
-		}
-
-		/**
-		 * Overwrites the incoming user (NOT the user receiving messages). Useful, if the {@link #userOut} is not known.
-		 *
-		 * @param userIn incoming user
-		 * @return this builder
-		 * @see #setUserOut(String)
-		 */
-		public Builder setUserIn(String userIn) {
-			this.userIn = userIn;
-			return this;
-		}
-
-
-
-		public ConversationParser build() {
-			checkValidState();
-
-			return new ConversationParser(content, createCheckUserOut());
-		}
-
-		private Function<String, Boolean> createCheckUserOut() {
-			if (userOut != null) {
-				return s -> s.equalsIgnoreCase(userOut);
-			}
-			if (userIn != null) {
-				return s -> !s.equalsIgnoreCase(userIn);
-			}
-
-			return s -> false;
-		}
-
-		private void checkValidState() {
-			if (content == null) {
-				throw new IllegalStateException("Content not set");
-			}
-			if (userOut == null && userIn == null) {
-				System.err.println("-- " + LocalTime.now() + "\tConversationBuilder " + id +
-				                   ":\tNo incoming and outgoing user set. Assuming all messages incoming");
-			}
-		}
 	}
 }
