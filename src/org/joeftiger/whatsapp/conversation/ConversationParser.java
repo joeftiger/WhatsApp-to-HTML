@@ -24,7 +24,6 @@ class ConversationParser {
 
 	/** ============================================================================================================ */
 
-	private List<Element> messages;
 	private String content;
 
 	private Function<String, Boolean> checkUserOut;
@@ -33,7 +32,6 @@ class ConversationParser {
 	private LocalDate lastDate = LocalDate.MIN;
 
 	ConversationParser(String content, Function<String, Boolean> checkUserOut, Function<String, String> pathCreator) {
-		messages = new ArrayList<>();
 		this.content = content;
 		this.checkUserOut = checkUserOut;
 		this.pathCreator = pathCreator;
@@ -41,18 +39,30 @@ class ConversationParser {
 
 	/** ============================================================================================================ */
 
+	/**
+	 * Parses all messages from {@link #content} and returns the HTML elements.
+	 *
+	 * @return list of elements containing all messages ( + dates)
+	 */
 	public List<Element> parse() {
 		String[] splitMessages = content.split(REGEX_MESSAGE_SPLIT);
 
+		List<Element> messages = new ArrayList<>();
 		for (String msg : splitMessages) {
 			MessageData data = new MessageData(msg);
-			parseMessageFrom(data);
+			parseMessageFrom(data, messages);
 		}
 
 		return messages;
 	}
 
-	private void parseMessageFrom(MessageData content) {
+	/**
+	 * Parses the given message data into correct html element(s).
+	 *
+	 * @param content  message data to alter
+	 * @param messages list to add html elements to
+	 */
+	private void parseMessageFrom(MessageData content, List<Element> messages) {
 		if (content.getDate().isAfter(lastDate)) {
 			messages.add(createDate(content.getDate()));
 		}
@@ -86,7 +96,6 @@ class ConversationParser {
 	 *
 	 * @param content content to search for image link
 	 * @param message message to store the HTML-ized image link
-	 * @return {@code content} without the image link
 	 */
 	private void searchImage(MessageData content, Element message) {
 		String[] split = content.getMessage().split("\\R", 2);
@@ -147,6 +156,12 @@ class ConversationParser {
 		message.setMessage(message.getMessage().replaceAll(REGEX_URL, "<a href=\"$1\">$1</a>"));
 	}
 
+	/**
+	 * Creates a new html element to visualize the date change.
+	 *
+	 * @param date date to use
+	 * @return html date element
+	 */
 	private Element createDate(LocalDate date) {
 		this.lastDate = date;
 		return new Element("div")
