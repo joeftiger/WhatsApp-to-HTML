@@ -1,4 +1,4 @@
-package org.joeftiger.whatsapp;
+package org.joeftiger.whatsapp.legacy;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

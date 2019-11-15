@@ -1,9 +1,15 @@
-package org.joeftiger.whatsapp;
+package org.joeftiger.whatsapp.legacy;
+
+import org.joeftiger.javahelp.Help;
+import org.joeftiger.javahelp.Usage;
+import org.joeftiger.whatsapp.Resources;
 
 import java.io.IOException;
 import java.nio.file.*;
 
 public class WhatsAppToHTML {
+
+	private Help help;
 
 	private Path filePath;
 	private String outgoingUser;
@@ -38,6 +44,8 @@ public class WhatsAppToHTML {
 	 * @param args program arguments
 	 */
 	private void init(String[] args) {
+		help = new Help().setUsage(new Usage().addTargets("outgoing user", "path to chat.txt"));
+
 		if (args.length != 2) {
 			showHelp();
 			System.exit(1);
@@ -112,7 +120,7 @@ public class WhatsAppToHTML {
 	 * Prints basic help for usage of this program.
 	 */
 	private void showHelp() {
-		System.err.println("usage:\t<outgoing user> <path to chat.txt>");
+		System.out.println(help);
 	}
 
 	public static void main(String[] args) throws IOException {

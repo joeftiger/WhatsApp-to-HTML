@@ -1,4 +1,4 @@
-package org.joeftiger.whatsapp;
+package org.joeftiger.whatsapp.legacy;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -1,4 +1,4 @@
-package org.joeftiger.whatsapp;
+package org.joeftiger.whatsapp.legacy;
 
 import java.io.IOException;
 import java.nio.file.Files;
