@@ -41,7 +41,7 @@ public class Conversation {
 											.setContent(content)
 											.build();
 
-		for (var msg : parser.parse()) {
+		for (Element msg : parser.parse()) {
 			container.appendChild(msg);
 		}
 
