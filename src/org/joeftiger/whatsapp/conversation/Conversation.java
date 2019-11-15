@@ -35,7 +35,7 @@ public class Conversation {
 				.attr("id", chatName);
 		Element container = new Element("conversation-container").appendTo(conversation);
 
-		ConversationParser parser = new ConversationParser.Builder()
+		ConversationParser parser = new ConversationParserBuilder()
 											.setID(chatName)
 											.setUserIn(chatName)
 											.setContent(content)
